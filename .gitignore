@@ -1,0 +1,8 @@
+*.swp
+cruft
+cruft/
+cruft/*
+*cruft*
+node_modules
+node_modules/
+node_modules/*
