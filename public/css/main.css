@@ -1,0 +1,140 @@
+/*<=>-----<INDEX>-----<=>
+=========================
+Main 
+Main Navigation
+Header
+Sermon Table
+Footer
+=======================*/
+
+
+/*<=>-----<COLORS>-----<=>
+==========================
+MidBlue: #5487D3
+LightBlue: #A9CCEC
+LighterBlue: #F5FBFC
+========================*/
+
+
+/* Main */
+@media screen and (min-width: 1100px){
+	body {
+		width: 60%;
+	}
+}
+body {
+	margin: 0 auto;
+	border: 1px solid black;
+	border-radius: 1em;	
+	color: #777;
+	font-family: Arial, Helvetica, sans-serif;
+}
+main {
+	padding: 0 1em;
+	line-height: 1.4em;
+}
+main h1 {
+	font-size: 1.5em;
+	font-weight: normal;
+	padding: 0;
+	margin: .6em 0;
+}
+
+/* Main Navigation */
+#mainNav {
+	width: 100%;
+	border-top: 1px solid #777;
+	border-bottom: 1px solid #777;
+	padding: 0 0 .2em 0;
+}
+#mainNav ul {
+	list-style-type: none;
+	display: inline;
+	padding: 0;
+	margin: 0;
+}
+#mainNav li {
+	display: inline;
+	border: 1px solid #777;
+	border-left: none;
+	border-bottom: none;
+	padding: .2em 1em;
+}
+#mainNav a {
+	width: 100%;
+	font-size: 1.2em;
+	text-decoration: none;
+	color: #777;
+	height: 100%;
+}
+#mainNav li:hover, #mainNav li:focus {
+	background: #eee;
+	border-bottom: 1px solid #eee;
+} 
+#mainNav li:hover a, #mainNav li:focus a {
+	color: #5487D3;
+} 
+
+/* Header */
+header {
+	background: #5487D3;	
+	border-radius: 1em 1em 0 0; /* Match body radius */
+	color: white;
+	padding: 0 1em .5em;
+}
+header h1 {
+	font-weight: normal;
+	padding: 1em 0;
+	margin: 0;
+}
+header p {
+	margin: 0;
+	padding: 0;
+}
+
+/* Sermon Table */
+@media screen and (min-width: 1100px){
+	#sermonTable {
+		width: 60%;
+	}
+}
+@media screen and (max-width: 1100px){
+	#sermonTable {
+		width: 90%;
+	}
+}
+#sermonTable {
+	margin: 2em 0 .5em 0;
+}
+#sermonTable thead,  #sermonTable tbody {
+	border: 1px solid black;
+}
+#sermonTable, #sermonTable td, #sermonTable th{
+	border-collapse: collapse;
+}
+#sermonTable tr:nth-child(even) {
+	background: #F5FBFC;
+}
+#sermonTable th {
+	background: #A9CCEC;	
+}
+#sermonTable td {
+	text-align: center;
+}
+
+/* Footer */
+footer {
+	position: relative;
+	top: .4em;
+}
+footer p {
+	font-size: .9em;
+	padding: 0;
+	margin: 0;
+}
+footer #left {
+	float: left;
+}
+footer #right {
+	float: right;
+}
