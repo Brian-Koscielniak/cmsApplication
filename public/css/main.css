@@ -5,6 +5,7 @@ Main Navigation
 Header
 Sermon Table
 Footer
+TinyMCE
 =======================*/
 
 
@@ -137,4 +138,9 @@ footer #left {
 }
 footer #right {
 	float: right;
+}
+
+/* TinyMCE */
+#tinyMCE textarea{
+	height: 400px;
 }

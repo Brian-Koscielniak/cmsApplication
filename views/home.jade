@@ -5,7 +5,13 @@ include ../public/htmlHead.jade
 body
 	include ../public/header.jade
 	include ../public/nav.jade
-	main
-		h1 Home Page
-		include ../public/lorem01.jade
+	main !{pageData}
+		form#tinyMCE(method='post')
+			textarea#content !{pageData}
+		input#contentSaveBtn(name='submitbtn', type='button', value='Save Content')
 	include ../public/footer.jade
+	script(src="js/Ajax.js", type='text/javascript')
+	script(src="js/main.js", type='text/javascript')
+	script(src="//tinymce.cachefly.net/4.2/tinymce.min.js")
+	script
+		| tinymce.init({selector:'#content', content_css:'../css/tinyMCE.css', plugins:'save'});
