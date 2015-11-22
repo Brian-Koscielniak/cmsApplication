@@ -1,17 +1,23 @@
-var express = require('express');
-var request = require('request');
-var bodyParser = require('body-parser');
-var Jade = require('jade');
-var fs = require('fs');
+// TODO: get app.js  to work and import like it should
+	// The modules and such
+	var session = require('express-session');
+	var express = require('express');
+	var request = require('request');
+	var bodyParser = require('body-parser');
+	var Jade = require('jade');
+	var fs = require('fs');
+	var crypto = require('crypto');
 
-var app = express();
+	// app is express
+	var app = express();
 
-app.set('views', __dirname + '/views');
-app.set('view engine','jade');
-app.engine('jade', Jade.__express);
-app.use(express.static('public'));
-app.use(bodyParser.urlencoded({extended: true}));
-app.use(bodyParser.json());
+	// setting all this noise
+	app.set('views', __dirname + '/views');
+	app.set('view engine','jade');
+	app.engine('jade', Jade.__express);
+	app.use(express.static('public'));
+	app.use(bodyParser.urlencoded({extended: true}));
+	app.use(bodyParser.json());
 
 // Unless specified otherwide, server runs on port 3000
 process.argv[2] ? port = process.argv[2] : port = 3000;
@@ -19,13 +25,31 @@ process.argv[2] ? port = process.argv[2] : port = 3000;
 app.listen(port);
 console.log('Server is running on port %d', port);
 
+/////////////passwords///////////
+function hashPW(pwd){
+  return crypto.createHash('sha256').update(pwd).
+         digest('base64').toString();
+}
+
+// 
+app.use(session({
+  secret: 'taco cat',
+  resave: false,
+  saveUninitialized: false
+}));
+////////////////////////////////////////
+
 // Setting up routes
 app.get('/', function(req, res){
-	renderPage("home", res)
+      res.redirect('/home');
 });
 
 app.get('/home', function(req, res){
-	renderPage("home", res)
+	if (req.session.admin){
+		renderPage("home", res, req.session.admin);
+	} else {
+		renderPage("home", res, false);
+	}
 });
 
 app.post("/home", function(req, res){
@@ -49,7 +73,7 @@ app.post("/home", function(req, res){
 });
 
 	
-function renderPage(Page, res){
+function renderPage(Page, res, admin){
 	var MongoClient = require('mongodb').MongoClient
 	MongoClient.connect('mongodb://localhost:27017/content', function(err, db){
 		db.collection('pageContent', function(err, collection){
@@ -58,7 +82,11 @@ function renderPage(Page, res){
 			} else {
 				collection.find({page: Page}, function(err, cursor){
 					cursor.forEach(function(item){
-						res.render(Page, {pageData: item.content});
+						if(admin){
+							res.render(Page, {admin: true, pageData: item.content});
+						}else{
+							res.render(Page, {admin: false, pageData: item.content});
+						}
 						db.close();
 					});
 				});
@@ -66,17 +94,46 @@ function renderPage(Page, res){
 		});
 	});
 }
-//////////////////////////////////////////
-var MongoClient = require('mongodb').MongoClient
-MongoClient.connect('mongodb://localhost:27017/content', function(err, db){
-	/*
-	var contentDB = db;
-	contentDB.createCollection("pageContent", function(err, newCollection){
-		newCollection.insert({test: "text"});
-	});
-	*/
+
+app.get('/logout', function(req, res){
+  req.session.destroy(function(){
+    res.redirect('/login');
+  });
 });
 
+app.get('/login', function(req, res){
+  if(req.session.user){
+    res.redirect('/restricted');
+  }else if(req.session.error){
+    error = req.session.error;
+    res.render('login.jade',{data: {error: error}})
+   
+  }
+  else{
+    error = '';
+    res.render('login.jade',{data: {error: error}});
+  }
+  
+});
+
+app.post('/login', function(req, res){
+  //user should be a lookup of req.body.username in database
+  var user = {name:req.body.username, password:hashPW("myPass")};
+  if (user.password === hashPW(req.body.password.toString())) {
+    req.session.regenerate(function(){
+      req.session.user = user;
+      req.session.success = 'Authenticated as ' + user.name;
+      req.session.admin = true;
+      res.redirect('/home');
+    });
+  } 
+  else {
+    req.session.regenerate(function(){
+      req.session.error = 'Authentication failed.';
+      res.redirect('/login');
+    });
+  }
+});
 
 /////////////////////////////////////////
 app.get('/sermons', function(req, res){
