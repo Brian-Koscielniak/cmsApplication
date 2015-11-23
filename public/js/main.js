@@ -1,8 +1,8 @@
-function testFunc(req){
+function update_content(req){
 	console.log(req.responseText);
 	document.getElementById('content').innerHTML = req.responseText;
 }
-function testAjax(){
+function save_content(){
 	// This iframe holds the content
 	var content_ifr = document.getElementById('content_ifr');
 
@@ -12,8 +12,9 @@ function testAjax(){
 	// Get and encode the data for shipping to server
 	var data = encodeURIComponent(content.getElementById('tinymce').innerHTML);
 	
-	// TODO: this will only work on home page.. 
-	Ajax.sendRequest('/home', testFunc, data);
+	// 
+	page = document.getElementById("page_name").getAttribute('content');	
+	Ajax.sendRequest(page, update_content, data);
 }
 var saveBtn = document.querySelector('#contentSaveBtn');
-saveBtn.addEventListener("click", testAjax);
+if(saveBtn){saveBtn.addEventListener("click", save_content)}
