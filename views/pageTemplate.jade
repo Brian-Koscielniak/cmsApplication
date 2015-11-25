@@ -10,10 +10,11 @@ body
 			main 
 				form#tinyMCE(method='post')
 					textarea#content !{pageData}
-				input#contentSaveBtn(name='submitbtn', type='button', value='Save Content')
+				input#contentSaveBtn(type='button', value='Save Content')
 		else 
 			main !{pageData}
 	include ../public/footer.jade
+	div#messageBox Saving content...
 	script(src="js/Ajax.js", type='text/javascript')
 	script(src="js/main.js", type='text/javascript')
 	script(src="//tinymce.cachefly.net/4.2/tinymce.min.js")

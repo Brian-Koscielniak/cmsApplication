@@ -1,4 +1,5 @@
 var controller = require('../controllers/page-controller.js');
+var crypto = require('crypto');
 
 module.exports = function(app){
 	app.get('/logout', function(req, res){
@@ -21,7 +22,7 @@ module.exports = function(app){
 
 	app.post('/login', function(req, res){
 		//user should be a lookup of req.body.username in database
-		var user = {name:req.body.username, password:hashPW("myPass")};
+		var user = {name:req.body.username, password:hashPW("p")};
 		if (user.password === hashPW(req.body.password.toString())) {
 			req.session.regenerate(function(){
 				req.session.user = user;
@@ -50,6 +51,9 @@ module.exports = function(app){
 
 		// Check for admin status, and render page based on path variable
 		req.session.admin ? controller.renderPage(path, res, req.session.admin) : controller.renderPage(path, res, false);
+	});
+	app.post("/times", function(req, res){
+		controller.handlePostTimes(res, req);
 	});
 	app.post("*", function(req, res){
 		// Access the http request object, to TODO finish this comment

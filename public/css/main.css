@@ -6,6 +6,7 @@ Header
 Sermon Table
 Footer
 TinyMCE
+Messages
 =======================*/
 
 
@@ -78,6 +79,7 @@ main h1 {
 
 /* Header */
 header {
+	position: relative;
 	background: #5487D3;	
 	border-radius: 1em 1em 0 0; /* Match body radius */
 	color: white;
@@ -91,6 +93,13 @@ header h1 {
 header p {
 	margin: 0;
 	padding: 0;
+}
+#logoutBtn {
+	color: white;
+	font-size: 1.2em;
+	position: absolute;
+	top: 40px;
+	right: 30px;
 }
 
 /* Sermon Table */
@@ -143,4 +152,18 @@ footer #right {
 /* TinyMCE */
 #tinyMCE textarea{
 	height: 400px;
+}
+
+/* Messages */
+#messageBox {
+	padding: .2em;
+	position: absolute;
+	top: 45%;
+	left: 45%;
+	height: 5%;
+	width: 10%;
+	background: white;
+	border: 2px solid blue;
+	border-radius: 10px;
+	display: none;
 }

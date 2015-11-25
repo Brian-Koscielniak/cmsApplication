@@ -4,7 +4,6 @@ var request = require('request');
 var bodyParser = require('body-parser');
 var Jade = require('jade');
 var fs = require('fs');
-var crypto = require('crypto');
 
 module.exports = function(){
 	var app = express();

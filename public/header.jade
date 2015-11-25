@@ -1,4 +1,14 @@
 header
 	h1 CMS Application
-	p First Service
-	p Second Service
+	#admin
+		if admin == true
+			p First Service: 
+				input(type="text", size="10", value=services[0])
+			p Second Service: 
+				input(type="text", size="10", value=services[1])
+			input#timeSaveBtn(type='button', value='Save Times')
+
+			a#logoutBtn(href="logout") Logout
+		else	
+			p First Service: !{services[0]}
+			p Second Service: !{services[1]}
