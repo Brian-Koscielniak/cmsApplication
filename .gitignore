@@ -6,3 +6,5 @@ cruft/*
 node_modules
 node_modules/
 node_modules/*
+public/files
+public/files/*

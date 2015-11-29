@@ -7,16 +7,15 @@ body
 		h1 CMS Application
 	include ../public/nav.jade
 	main
-		h1 Login
-			form(method='post' action='/login')
-				label Username: 
-					input(type='text' name='username' size='30')
-				br
-				label Password:
-					input(type='password' name='password' size='30')
-				br
-				input(type='submit' value='Submit')
-		h2 #{data.error}
+		h1 Login To Admin Area
+		form#loginForm(method='post' action='/login')
+			p Enter password and click submit
+			p 
+				span #{data.error}
+			label Password: 
+				input(autofocus type='password' name='password' size='20')
+			br
+			input(type='submit' value='Access Admin Area')
 	
 	include ../public/footer.jade
 	script(src="js/Ajax.js", type='text/javascript')
