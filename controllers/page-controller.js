@@ -1,35 +1,4 @@
 var fs = require('fs');
-var async = require('async');
-
-/*
-// This section is trying to get mongoose to do it's thing
-var contents = require('../models/content');
-
-var fs = require('fs');
-var path = require('path');
-var mongoose = require('mongoose');
-var Content = mongoose.model('contents');
-
-mongoose.connect('mongodb://127.0.0.1:27017/content');
-mongoose.connection.on('open', function(){
-	// 
-});
-
-
-fs.readdirSync(path.normalize(__dirname + '/../models')).forEach(function(filename){
-	if(~filename.indexOf('js')){
-		require(path.normalize(__dirname + '/../models/' + filename));
-		console.log(path.normalize(__dirname + '/../models/' + filename));
-	}
-});
-
-
-var test = mongoose.model('contents');
-test.find(function(err, page){
-	console.log(JSON.stringify(page));
-});
-*/
-
 
 exports.renderPage = function(Page, res, admin){
 	var MongoClient = require('mongodb').MongoClient
@@ -40,7 +9,7 @@ exports.renderPage = function(Page, res, admin){
 			} else {
 				collection.find({page: Page}, function(err, cursor){
 					cursor.forEach(function(item){
-						exports.getServices(function(timeList){
+						getServiceTimes(function(timeList){
 							res.render("pageTemplate.jade", {page: Page, admin: admin, pageData: item.content, services: timeList});
 						});
 						db.close();
@@ -58,26 +27,11 @@ exports.renderSermons = function(res, admin){
 			if(err){
 				console.log(err);
 			} else {
-				exports.getServices(function(timeList){	
-					var filePaths = [];
-					var fileNames = [];
-					var fileDates = [];
-					var fileData = [];
-					collection.find({}, function(err, cursor){
-						var i = 0;
-						cursor.forEach(function(item){
-							filePaths[i] = item.path;
-							fileNames[i] = item.name;
-							fileDates[i] = item.date;
-							fileData[i] = {path: filePaths[i], name: fileNames[i], date: fileDates[i]};
-							i++;
-							db.close();
-						});
-				
-						// Faking with Timeout. I can't seem to get the res.render to wait until the cursor.forEach is done.
-						setTimeout(function(){res.render("sermons.jade", {admin: admin, page: "sermons", services: timeList, filedb: fileData})}, 1000);
-					});
-				});
+				getServiceTimes(function(timeList){	
+					getFileData(function(fileData){
+						res.render("sermons.jade", {admin: admin, page: "sermons", services: timeList, filedb: fileData})
+					})
+				})
 			}
 		});
 	});
@@ -113,14 +67,14 @@ exports.handlePostTimes = function(res, req){
 			} else {
 				collection.update({service: 1},{$set:{time: times[0]}},{multi:true, w:1},function(err, results){
 					if (err){
-						console.log(error);
+						console.log(err);
 					} else {
 						db.close();
 					}
 				});
 				collection.update({service: 2},{$set:{time: times[1]}},{multi:true, w:1},function(err, results){
 					if (err){
-						console.log(error);
+						console.log(err);
 					} else {
 						db.close();
 					}
@@ -131,33 +85,7 @@ exports.handlePostTimes = function(res, req){
 	});
 };
 
-exports.handlePostFiles = function(upload, res, req){
-	var fileData = [];
-	var MongoClient = require('mongodb').MongoClient
-	MongoClient.connect('mongodb://localhost:27017/content', function(err, db){
-		db.collection('files', function(err, collection){
-			if(err){
-				console.log(err);
-			} else {
-				exports.getServices(function(timeList){	
-					var filePaths = [];
-					var fileNames = [];
-					var fileDates = [];
-					collection.find({}, function(err, cursor){
-						var i = 0;
-						cursor.forEach(function(item){
-							filePaths[i] = item.path;
-							fileNames[i] = item.name;
-							fileDates[i] = item.date;
-							fileData[i] = {path: filePaths[i], name: fileNames[i], date: fileDates[i]};
-							i++;
-							db.close();
-						});
-					});
-				});
-			}
-		});
-	});
+exports.handlePostFiles = function(upload, req, res){
 	function getDate(){
 		var d = "";
 		var date = new Date();
@@ -171,49 +99,113 @@ exports.handlePostFiles = function(upload, res, req){
 	}
 	var mainPath = 'public/files/';
 	fs.rename(mainPath + req.file.filename, mainPath + req.file.filename + '.pdf', function (err) {
-		var MongoClient = require('mongodb').MongoClient
-		MongoClient.connect('mongodb://localhost:27017/content', function(err, db){
-			db.collection('files', function(err, collection){
-				if(err){
-					console.log(err);
-				} else {
-					var d = getDate();
-					collection.update({_id: req.file.filename},{$set:{_id: req.file.filename, date: d, name: req.body.data, path: mainPath+req.file.filename+".pdf"}},{upsert: true, multi:true, w:1},function(err, results){
-						if (err){
-							console.log(error);
-						} else {
-							db.close();
-							setTimeout(function(){res.send(fileData)},3000);
-						}
-					});
-				}
+		  if (err) {
+		  	console.log(err)
+		  } else{
+			var MongoClient = require('mongodb').MongoClient
+			MongoClient.connect('mongodb://localhost:27017/content', function(err, db){
+				db.collection('files', function(err, collection){
+					if(err){
+						console.log(err);
+					} else {
+						var d = getDate();
+						collection.update({_id: req.file.filename},{$set:{_id: req.file.filename, date: d, name: req.body.data, path: mainPath+req.file.filename+".pdf"}},{upsert: true, multi:true, w:1},function(err, results){
+							if (err){
+								console.log(error);
+							} else {
+								db.close();
+								getServiceTimes(function(timeList){	
+									getFileData(function(fileData){
+										res.send(fileData);
+									})
+								})
+							}
+						});
+					}
+				});
 			});
+		  }
+	 });
+};
+
+exports.deleteFile = function(req, res){
+	var MongoClient = require('mongodb').MongoClient
+	MongoClient.connect('mongodb://localhost:27017/content', function(err, db){
+		db.collection('files', function(err, collection){
+			if(err){
+				console.log(err);
+			} else {
+				collection.findOneAndDelete({_id: req.body.data},function(err, results){
+					if (err){
+						console.log(error);
+					} else {
+						fs.unlink(("./public/files/"+req.body.data+".pdf"), function(err){
+							getFileData(function(fileData){
+								if(fileData != null){
+									res.send(fileData);
+								} else {
+								/* Client side scripts will try to parse the response as JSON, unless 
+								false. Sending nothing is not optional as it expects a response */
+									res.send(false);
+								}
+							});
+						});
+						db.close();
+					}
+				});
+			}
 		});
 	});
 };
 
-exports.getServices = function(callback){
-/* This functions gets the service times one at a time. Callbacks are challenging... */
-	var timeList = [];
+function getServiceTimes(callback){
 	var MongoClient = require('mongodb').MongoClient
 	MongoClient.connect('mongodb://localhost:27017/content', function(err, db){
 		db.collection('services', function(err, collection){
 			if(err){
 				console.log(err);
 			} else {
-				collection.find({service: 1}, function(err, cursor){
+				var timeList = [];
+				var i = 0;
+				var Count;
+				collection.find({}, function(err, cursor){
+					cursor.count(function(err, count){
+						count ? Count = count : callback(null)
+					})
 					cursor.forEach(function(item){
-						timeList.push(item.time);	
-						collection.find({service: 2}, function(err, cursor){
-							cursor.forEach(function(item){
-								timeList.push(item.time);
-								db.close();
-								callback(timeList);
-							});
-						});
+						timeList.push(item.time);
+						i++
+						db.close();
+						if(i == Count){callback(timeList)}
 					});
 				});
 			}
-		});
-	});
-};
+		})
+	})
+}
+
+function getFileData(callback){
+	var MongoClient = require('mongodb').MongoClient
+	MongoClient.connect('mongodb://localhost:27017/content', function(err, db){
+		db.collection('files', function(err, collection){
+			if(err){
+				console.log(err);
+			} else {
+				var fileData = [];
+				var i = 0;
+				var Count;
+				collection.find({}, function(err, cursor){
+					cursor.count(function(err, count){
+						count ? Count = count : callback(null)
+					})
+					cursor.forEach(function(item){
+						fileData[i] = item;
+						i++;
+						db.close();
+						if(i == Count){callback(fileData)}
+					});
+				});
+			}
+		})
+	})
+}

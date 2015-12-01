@@ -14,7 +14,6 @@ body
 						br
 						input(type="submit" id="submitBtn")
 						br
-						div#response
 
 				table#sermonTable
 					thead
@@ -23,12 +22,6 @@ body
 							th Date
 							th Delete
 					tbody
-						each val in filedb
-							tr
-								td 
-									a(href= val.path)= val.name
-								td= val.date
-								td.delete delete
 		else 
 			main
 				table#sermonTable
@@ -37,12 +30,12 @@ body
 							th Name
 							th Date
 					tbody
-						each val in filedb
-							tr
-								td 
-									a(href= val.path)= val.name
-								td= val.date
 	div#messageBox
+	div#response
+	script.
+		var ADMIN = #{admin}
+		var fileData = !{JSON.stringify(filedb)}
 	script(src="js/Ajax.js", type='text/javascript')
 	script(src="js/main.js", type='text/javascript')
+	script(src="js/sermons.js", type='text/javascript')
 	include ../public/footer.jade

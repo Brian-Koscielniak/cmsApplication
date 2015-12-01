@@ -145,7 +145,10 @@ header p {
 	color: #777;
 }
 #sermonTable .delete {
-	
+	cursor: pointer;	
+}
+#sermonTable .delete:hover {
+	text-decoration: underline;
 }
 
 /* Footer */

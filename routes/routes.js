@@ -78,7 +78,11 @@ module.exports = function(app){
 
 	var upload = multer({dest: './public/files' });
 	app.post('/sermons', upload.single('file'), function(req, res){
-		controller.handlePostFiles(upload, res, req);
+		controller.handlePostFiles(upload, req, res);
+	});
+	
+	app.post('/delete', function(req, res){
+		controller.deleteFile(req, res);
 	});
 
 	app.post("*", function(req, res){

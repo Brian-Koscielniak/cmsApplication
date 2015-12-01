@@ -49,64 +49,9 @@ function save_times(){
 	Ajax.sendRequest("times", update_times, data);
 }
 
-
-// Sermon files upload code
-var form = document.getElementById('uploadFile');
-if(form){form.addEventListener('submit', save_file, false);};
-var response = document.getElementById('response');
-
-function save_file(e){
-	// update message box
-	displaySavingMessage()	
-
-	e.preventDefault();
-	var file = document.getElementById('file');
-	var fileName = document.getElementById('fileName').value;
-			
-	// //check that file extention is .pdf
-	// if (file.value.substr(-3)!=="pdf"){
-	// 	alert('You can only upload pdf files');
-	// 	e.preventDefault();
- //        //if nothing is done return to exit script
- //        return;
-	// }
-	
-	var formData = new FormData();
-	console.log(file.files[0]);	
-	formData.append('file', file.files[0]);
-	formData.append('data', fileName);
-    
-	//clear the values
-	file.value = '';
-	fileName.value = '';
-
-	setTimeout(function(){Ajax.sendRequest('/sermons',update_table,formData,true)}, 2);
-}
-
-function update_table(req){
-	// update message box. I've added a timeout to the function call, just so that the first message can be seen if Ajax happens too quickly.
-	setTimeout(function(){displaySuccessMessage()}, 100)
-
-	response.innerHTML = req.responseText;
-	
-	var fileData = JSON.parse(req.responseText)
-	var tbody = document.querySelector("#sermonTable tbody");
-	var tableContent = "";
-	console.log(fileData[0])
-	for(var i = fileData.length-1; i>=0; i--){
-		console.log("loops");
-		tableContent += "<tr>";
-		tableContent += "<td><a href='" + fileData[i].path + "'/>" + fileData[i].name + "</td>";
-		tableContent += "<td>" + fileData[i].date;
-		tableContent += "<td>delete</td>";
-		tableContent += "</tr>";
-	}	
-	tbody.innerHTML = tableContent;
-}
-
-
 // Display messages code
 var messageBox = document.getElementById("messageBox");
+
 function displaySavingMessage(){
 	messageBox.innerHTML = "Saving Content..."
 	messageBox.style.display = "block";	
