@@ -150,6 +150,11 @@ header p {
 #sermonTable .delete:hover {
 	text-decoration: underline;
 }
+#errorDisplay {
+	font-size: .8em;
+	color: red;
+	margin-left: .5em;
+}
 
 /* Footer */
 footer {

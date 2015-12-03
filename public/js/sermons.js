@@ -5,16 +5,19 @@
 
 // Sermon files upload code
 var form = document.getElementById('uploadFile');
+var errorDisplay = document.getElementById('errorDisplay');
 if(form){form.addEventListener('submit', save_file, false);};
-var response = document.getElementById('response');
 
 function save_file(e){
-	// update message box
-	displaySavingMessage()	
-
 	e.preventDefault();
 	var file = document.getElementById('file');
 	var fileName = document.getElementById('fileName').value;
+	
+	// invoke validate function, and if NOT validate break out effectively canceling save
+	if(!validate(file, fileName)){return false};
+
+	// update message box
+	displaySavingMessage()	
 
 	var formData = new FormData();
 	formData.append('file', file.files[0]);
@@ -26,6 +29,45 @@ function save_file(e){
 
 	//
 	Ajax.sendRequest('/sermons', update_table, formData, true);
+}
+
+function validate(file, fileName){
+	// Clear out the error message
+	errorDisplay.innerHTML = "";
+	
+	// Check to see	if there is more than empty or white space inside fileName
+	if(!(/\S/.test(fileName))){
+		// Update the error message
+		errorDisplay.innerHTML = "A file name must be specified."	
+
+		// if empty return false
+		return false;
+	}
+
+	// Was a file given?...
+	if(!file.files[0]){
+		// Update the error message
+		errorDisplay.innerHTML = "A file must be given."	
+
+		// ...if not, break out
+		return false;	
+	}
+
+	// Check if the type is pdf (only pdf format is allowed)
+	if(file.files[0].type != "application/pdf"){
+		// Update the error message
+		errorDisplay.innerHTML = "File type must be .pdf format."	
+	
+		// if not pdf return false
+		return false;
+	}
+
+	// If everything checkout then this inputs are valid, returns true
+	return true;	
+}
+function errNode(){
+	
+
 }
 
 function delete_file(e){

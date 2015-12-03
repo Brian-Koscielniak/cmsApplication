@@ -8,12 +8,13 @@ body
 			main
 				form#uploadFile(action="/sermons" method="post")
 					label(for="fileName") Sermon Title: 
-						input(name="fileName" type="text" size="25" id="fileName")
-						br
-						input(type="file" id="file")
-						br
-						input(type="submit" id="submitBtn")
-						br
+					input(name="fileName" type="text" size="25" id="fileName")
+					br
+					input(type="file" id="file")
+					br
+					input(type="submit" id="submitBtn")
+					span#errorDisplay
+					br
 
 				table#sermonTable
 					thead

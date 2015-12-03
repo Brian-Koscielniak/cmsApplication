@@ -1,6 +1,6 @@
 {
   "name": "cms_application",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "A small Content Management System using the MEAN stack.",
   "main": "server.js",
   "scripts": {
