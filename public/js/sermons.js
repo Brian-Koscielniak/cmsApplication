@@ -1,6 +1,8 @@
 (function(){
-	assign_delete();
+// Self calling function to populate the table
+	// Don't bother with the table if there is nothing
 	if(fileData){update_table()};
+	if(fileData){assign_delete()};
 }());
 
 // Sermon files upload code
@@ -9,7 +11,10 @@ var errorDisplay = document.getElementById('errorDisplay');
 if(form){form.addEventListener('submit', save_file, false);};
 
 function save_file(e){
+	// We'd like the page not to reload. 
 	e.preventDefault();
+
+	// Get the inputs
 	var file = document.getElementById('file');
 	var fileName = document.getElementById('fileName').value;
 	
@@ -19,6 +24,7 @@ function save_file(e){
 	// update message box
 	displaySavingMessage()	
 
+	// Build the data to send to server
 	var formData = new FormData();
 	formData.append('file', file.files[0]);
 	formData.append('data', fileName);
@@ -27,7 +33,7 @@ function save_file(e){
 	file.value = '';
 	fileName.value = '';
 
-	//
+	// Send the inputs
 	Ajax.sendRequest('/sermons', update_table, formData, true);
 }
 
@@ -62,43 +68,50 @@ function validate(file, fileName){
 		return false;
 	}
 
-	// If everything checkout then this inputs are valid, returns true
+	// If everything checks out then the inputs are valid, returns true
 	return true;	
-}
-function errNode(){
-	
-
 }
 
 function delete_file(e){
 	var data = encodeURIComponent(e.id);
-	
+
+	// Admin user must confirm the deletion. 'Cancel' will break out the function and not request deletion
+	if(!confirm("Permanatly delete file?")){return false}
+
+	// Now go and delete that file
 	Ajax.sendRequest("/delete", update_table, data);
 }
 
 function assign_delete(){
+// Gives the delete feature
 	var delArr = document.querySelectorAll('.delete');
 	for(i=0; i< delArr.length; i++){
 		delArr[i].addEventListener('click', function(){delete_file(this)}, false);
 	}
 }
 
-
 function update_table(req){
 	// update message box. I've added a timeout to the function call, just so that the first message can be seen if Ajax happens too quickly.
 	setTimeout(function(){displaySuccessMessage()}, 100)
 
+	// fileData by defualt was sent on the GET request. On the POST request new data is sent and fileData is updated. 
 	req ? fileData = JSON.parse(req.responseText) : fileData;
 
+	// Built the table based on fileData
 	var tbody = document.querySelector("#sermonTable tbody");
 	var tableContent = "";
+
+	// Server side file data is stored newest Last. To display newest First, we index backwards.
 	for(var i = fileData.length-1; i>=0; i--){
 		tableContent += "<tr>";
-		tableContent += "<td><a href='" + fileData[i].path + "'/>" + fileData[i].name + "</td>";
+		tableContent += "<td><a class='fileLink' href='" + fileData[i].path + "'/>" + fileData[i].name + "</td>";
 		tableContent += "<td>" + fileData[i].date;
 		if(ADMIN){tableContent += "<td class='delete' id='" + fileData[i]._id + "'>delete</td>"};
 		tableContent += "</tr>";
 	}	
+
 	tbody.innerHTML = tableContent;
+
+	// Gives the delete feature 
 	assign_delete();
 }

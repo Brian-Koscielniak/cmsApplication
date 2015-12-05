@@ -12,7 +12,7 @@ body
 					br
 					input(type="file" id="file")
 					br
-					input(type="submit" id="submitBtn")
+					input(value="Save Sermon" type="submit" id="submitBtn")
 					span#errorDisplay
 					br
 
@@ -23,6 +23,7 @@ body
 							th Date
 							th Delete
 					tbody
+				div#messageBox
 		else 
 			main
 				table#sermonTable
@@ -31,8 +32,7 @@ body
 							th Name
 							th Date
 					tbody
-	div#messageBox
-	div#response
+				div#messageBox
 	script.
 		var ADMIN = #{admin}
 		var fileData = !{JSON.stringify(filedb)}

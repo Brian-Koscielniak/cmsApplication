@@ -6,4 +6,5 @@ var contentSchema = new Schema({
 	content: String
 });
 
-mongoose.model('contents', contentSchema);
+// look for pageContent collection
+mongoose.model('pagecontents', contentSchema);

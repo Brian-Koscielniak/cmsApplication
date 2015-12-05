@@ -5,7 +5,6 @@ function update_content(req){
 	// update message box. I've added a timeout to the function call, just so that the first message can be seen if Ajax happens too quickly.
 	setTimeout(function(){displaySuccessMessage()}, 100)
 
-	console.log(req.responseText);
 	document.getElementById('content').innerHTML = req.responseText;
 }
 function save_content(){
@@ -21,8 +20,8 @@ function save_content(){
 	// Get and encode the data for shipping to server
 	var data = encodeURIComponent(content.getElementById('tinymce').innerHTML);
 	
-	// 
-	page = document.getElementById("page_name").getAttribute('content');	
+	// Because the express routes are common among pages, the page must be given so it properly update database
+	page = document.getElementById("page_name").getAttribute('content');
 	Ajax.sendRequest(page, update_content, data);
 }
 
@@ -34,7 +33,10 @@ function update_times(req){
 	// update message box. I've added a timeout to the function call, just so that the first message can be seen if Ajax happens too quickly.
 	setTimeout(function(){displaySuccessMessage()}, 100)
 
-	timesBack = req.responseText.split("^^^")	
+	// Break apart the CSV 
+	timesBack = req.responseText.split("^^^");
+
+	// Update the UI display (even though data doesn't change)
 	times[0].value = timesBack[0];
 	times[1].value = timesBack[1];
 }
