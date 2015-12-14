@@ -6,5 +6,4 @@ var serviceSchema = new Schema({
 	time: String
 });
 
-// look for pageContent collection
 mongoose.model('services', serviceSchema);

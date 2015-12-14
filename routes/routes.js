@@ -59,7 +59,7 @@ module.exports = function(app){
 		var user = {name:req.body.username, password:hashPW("p")};
 		if (user.password === hashPW(req.body.password.toString())) {
 			req.session.regenerate(function(){
-				//req.session.user = user;
+				req.session.user = user;
 				//req.session.success = 'Authenticated as ' + user.name;
 				req.session.admin = true;
 				res.redirect('/home');

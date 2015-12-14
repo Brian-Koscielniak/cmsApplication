@@ -8,5 +8,4 @@ var fileSchema = new Schema({
 	path: String
 });
 
-// look for pageContent collection
 mongoose.model('files', fileSchema);
