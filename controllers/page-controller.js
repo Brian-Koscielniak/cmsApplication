@@ -150,7 +150,7 @@ function getServiceTimes(callback){
 			console.log(err);
 		} else {
 			var timeList = [];
-			for(var i = 0; i < timeList.length; i++){
+			for(var i = 0; i < services.length; i++){
 				timeList[i] = services[i].time;
 			}
 			callback(timeList)
