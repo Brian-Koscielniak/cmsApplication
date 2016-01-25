@@ -14,6 +14,7 @@ exports.renderPage = function(Page, res, admin){
 		} else {
 			if(!pageData[0]){
 			// 'Page' variable can be anything, but only certain entries exist in the database. if 'Page' isn't found then 404
+			// TODO: build basic Static UI.
 				res.send("There is nothing here.");
 			} else {
 				// Every page gets service times. 
@@ -144,53 +145,29 @@ exports.deleteFile = function(req, res){
 };
 
 function getServiceTimes(callback){
-	var MongoClient = require('mongodb').MongoClient
-	MongoClient.connect('mongodb://localhost:27017/content', function(err, db){
-		db.collection('services', function(err, collection){
-			if(err){
-				console.log(err);
-			} else {
-				var timeList = [];
-				var i = 0;
-				var Count;
-				collection.find({}, function(err, cursor){
-					cursor.count(function(err, count){
-						count ? Count = count : callback(null)
-					})
-					cursor.forEach(function(item){
-						timeList.push(item.time);
-						i++
-						db.close();
-						if(i == Count){callback(timeList)}
-					});
-				});
+	mongoose.model('services').find({},function(err, services){
+		if(err){
+			console.log(err);
+		} else {
+			var timeList = [];
+			for(var i = 0; i < timeList.length; i++){
+				timeList[i] = services[i].time;
 			}
-		})
-	})
+			callback(timeList)
+		}
+	});
 }
 
 function getFileData(callback){
-	var MongoClient = require('mongodb').MongoClient
-	MongoClient.connect('mongodb://localhost:27017/content', function(err, db){
-		db.collection('files', function(err, collection){
-			if(err){
-				console.log(err);
-			} else {
-				var fileData = [];
-				var i = 0;
-				var Count;
-				collection.find({}, function(err, cursor){
-					cursor.count(function(err, count){
-						count ? Count = count : callback(null)
-					})
-					cursor.forEach(function(item){
-						fileData[i] = item;
-						i++;
-						db.close();
-						if(i == Count){callback(fileData)}
-					});
-				});
+	mongoose.model('files').find({},function(err, files){
+		if(err){
+			console.log(err);
+		} else {
+			var fileData = [];
+			for(var i = 0; i < files.length; i++){
+				fileData[i] = files[i];
 			}
-		})
-	})
+			callback(fileData)
+		}
+	});
 }

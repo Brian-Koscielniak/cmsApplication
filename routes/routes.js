@@ -56,7 +56,7 @@ module.exports = function(app){
 	// POSTs 
 	app.post('/login', function(req, res){
 		//user should be a lookup of req.body.username in database
-		var user = {name:req.body.username, password:hashPW("p")};
+		var user = {name:req.body.username, password:hashPW("password123")};
 		if (user.password === hashPW(req.body.password.toString())) {
 			req.session.regenerate(function(){
 				req.session.user = user;
